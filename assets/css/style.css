@@ -61,6 +61,7 @@ button:hover {
 .grayed-out {
   color: lightgray;
   font-style: italic;
+  font-size: 18px;
 
 }
 
@@ -137,4 +138,34 @@ button:hover {
   padding: 10px;
   font-size: 24px;
   font-weight: bold;
+}
+
+
+
+/* MEDIA QUERIES */
+
+/* 640px */
+
+@media screen and (max-width: 640px) {
+
+#game-wrapper {
+    /* display: inline-block; */
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+}
+
+/* 768px */
+
+@media screen and (max-width: 768px) and (min-width: 641px) {
+
+}
+
+/* 980px */
+
+@media screen and (max-width: 980px) and (min-width: 769px) {
 }
