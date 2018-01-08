@@ -1,16 +1,18 @@
 $(document).ready(function() {
 
-var currentQuestion; // # of question in the array
-var questionNumber; // current question number from 1-8 (currentQuestion plus 1)
+// global variables
+var currentQuestion; // # of question in the array (0-7)
+var questionNumber; // current question number from 1-8
 
 var correctGuesses; // count number of correct guesses
 var incorrectGuesses; // count number of incorrect guesses
 
+var seconds;
 var breakSeconds;
+var timeLeft;
+var breakLeft;
 
-
-// question & answer arrays
-
+// questions & answers
 var triviaQuestions = [{
   question: "In which show was the main character (played by Melissa Joan Hart) a teenager who spoke to the audience about her everyday life?",
   answerChoices: [
@@ -22,7 +24,7 @@ var triviaQuestions = [{
   correctAnswer: 1
 },
 {
-  question: "This game show on Nickelodeon had two teams compete to win prizes by answering trivia questions that could lead to them getting 'Gak' spilled on them.",
+  question: "This game show on Nickelodeon had two teams compete to win prizes by answering trivia questions that could lead to getting 'Gak' spilled on them.",
   answerChoices: [
       "Guts",
       "Legends of the Hidden Temple",
@@ -67,12 +69,12 @@ var triviaQuestions = [{
       "Green Sweater Vest, White T-Shirt, Brown Shorts, Red and White Shoes",
       "Green Button Up Vest, White T-Shirt, Brown Shorts, Red and White Shoes",
       "Green Button Up Vest, White Long Sleeve Shirt, Brown Shorts, Red Shoes",
-      "Green Sweater Vest, White T-Shirt, Black Shorts, Red and White Shoes"
+      "Brown Sweater Vest, White T-Shirt, Green Shorts, Red and White Shoes"
     ],
   correctAnswer: 0
 },
 {
-  question: "Which artist did NOT perform in an episode of 'All That'?",
+  question: "Which musical artist did NOT perform in an episode of 'All That'?",
   answerChoices: [
       "Aaliyah",
       "Usher",
@@ -99,9 +101,8 @@ var text = {
   timeUp: "You ran out of time! No point for you. The correct answer was:"
 }
 
+// buttons
 
-
-// hide buttons when game starts
 $('#start-button').on('click', function(){
 	$(this).hide();
 	startGame();
@@ -112,38 +113,58 @@ $('#playagain-button').on('click', function(){
 	startGame();
 });
 
+$("#nextq-button").on("click", function() {
+    breakOver();
+});
+
+$("#results-button").on("click", function() {
+    gameResult();
+});
+
+$("#playagain-button").on("click", function() {
+    startGame();
+    clearInterval(breakLeft);
+});
+
+// functions
 
 function startGame() {
-  $("#time-left").empty();
   currentQuestion = 0;
   correctGuesses = 0;
   incorrectGuesses = 0;
   questionNumber = 1;
+  seconds = 0;
+  breakSeconds = 0;
+	clearInterval(timeLeft);
+  clearInterval(breakLeft);
   nextQuestion();
 }
 
 function nextQuestion() {
   $("#instructions").empty();
-  $("#question-number").empty();
+  $(".question-number").empty();
   $(".current-question").empty();
   $(".current-question").removeClass("grayed-out");
+  $("#current-answerchoices").empty();
   $("#message").empty();
   $("#correct-answer").empty();
   $("#nextq-button").hide();
+  $("#time-left").empty();
   $("#time-left").show();
+  $("#end-message").empty();
 
   $(".question-number").html("Question #" + questionNumber + " of " + triviaQuestions.length);
   $(".current-question").html(triviaQuestions[currentQuestion].question);
 
-  console.log(triviaQuestions[currentQuestion].question);
+  console.log("Question " + questionNumber + ": " + triviaQuestions[currentQuestion].question);
 
   for (i = 0; i < triviaQuestions[currentQuestion].answerChoices.length; i++) {
-    var answers = $("<div>");
-    answers.attr({"data-index": i});
-    answers.text(triviaQuestions[currentQuestion].answerChoices[i]);
-    answers.addClass("answer-choice");
-    $("#current-answerchoices").append(answers);
-  }
+      var answers = $("<div>");
+      answers.attr({"data-index": i});
+      answers.text(triviaQuestions[currentQuestion].answerChoices[i]);
+      answers.addClass("answer-choice");
+      $("#current-answerchoices").append(answers);
+    }
 
   startTimer();
 
@@ -154,113 +175,120 @@ function nextQuestion() {
   });
 }
 
-  function startTimer() {
-    seconds = 20;
-    $("#time-left").show();
-    $("#time-left").html("Time left: " + seconds);
-    timeLeft = setInterval(decrement, 1000);
-  }
+function startTimer() {
+  seconds = 20;
+  $("#time-left").empty();
+  $("#time-left").show();
+  $("#time-left").html("Time left: " + seconds);
+  timeLeft = setInterval(decrement, 1000);
+}
 
-  function decrement() {
-    seconds--;
-    $("#time-left").show();
-    $("#time-left").html("Time left: " + seconds);
-    if (seconds === 0) {
-      clearInterval(timeLeft);
-      questionResult();
+function decrement() {
+  seconds--;
+  $("#time-left").show();
+  $("#time-left").html("Time left: " + seconds);
+  if (seconds === 0) {
+    userAnswer = null;
+    clearInterval(timeLeft);
+    questionResult();
+  }
+}
+
+function questionResult() {
+    var correctAnswer = triviaQuestions[currentQuestion].correctAnswer;
+
+    $("#time-left").hide();
+    $(".current-question").addClass("grayed-out");
+    $("#current-answerchoices").empty();
+
+
+    if (userAnswer === correctAnswer) {
+      correctGuesses++;
+      console.log("correct:" + correctGuesses);
+      console.log("incorrect:" + incorrectGuesses);
+      $("#message").text(text.correctGuesses);
+      $("#correct-answer").text(triviaQuestions[currentQuestion].answerChoices[correctAnswer]);
+          if ((correctGuesses + incorrectGuesses) < triviaQuestions.length) {
+          $("#nextq-button").show();
+        }
+          else {
+          $("#results-button").show();
+          }
     }
-  }
-
-    function questionResult() {
-      var correctAnswer = triviaQuestions[currentQuestion].correctAnswer;
-
-      $("#time-left").hide();
-      $(".current-question").addClass("grayed-out");
-      $("#current-answerchoices").empty();
-
-      if (userAnswer === correctAnswer) {
-        correctGuesses++;
-        console.log("correct:" + correctGuesses);
-        $("#message").text(text.correctGuesses);
-        $("#correct-answer").text(triviaQuestions[currentQuestion].answerChoices[correctAnswer]);
-        $("#nextq-button").show();
-      }
-      else if (userAnswer != correctAnswer) {
-        incorrectGuesses++;
-        console.log("incorrect:" + incorrectGuesses)
-        $("#message").text(text.incorrectGuesses);
-        $("#correct-answer").text(triviaQuestions[currentQuestion].answerChoices[correctAnswer]);
-        $("#nextq-button").show();
-      }
-      else {
-        incorrectGuesses++;
-        $("#message").text(text.timeUp);
-        $("#correct-answer").text(triviaQuestions[currentQuestion].answerChoices[correctAnswer]);
-        $("#nextq-button").show();
-      }
-
-console.log("just finished question in array position:" + currentQuestion);
-console.log("just finished question number:" + questionNumber);
-
-    if (currentQuestion <= triviaQuestions.length) {
-      breakTime();
+    else if (userAnswer === null) {
+      incorrectGuesses++;
+      console.log("correct:" + correctGuesses);
+      console.log("incorrect:" + incorrectGuesses)
+      $("#message").text(text.timeUp);
+      $("#correct-answer").text(triviaQuestions[currentQuestion].answerChoices[correctAnswer]);
+          if ((correctGuesses + incorrectGuesses) < triviaQuestions.length) {
+          $("#nextq-button").show();
         }
         else {
-          gameResult();
+        $("#results-button").show();
         }
-      }
+    }
+    else  {
+      incorrectGuesses++;
+      console.log("correct:" + correctGuesses);
+      console.log("incorrect:" + incorrectGuesses)
+      $("#message").text(text.incorrectGuesses);
+      $("#correct-answer").text(triviaQuestions[currentQuestion].answerChoices[correctAnswer]);
+          if ((correctGuesses + incorrectGuesses) < triviaQuestions.length) {
+          $("#nextq-button").show();
+        }
+        else {
+        $("#results-button").show();
+        }
 
-  $("#nextq-button").on("click", function() {
-    breakOver();
-
-
-});
+    }
+    breakTime();
+}
 
 function breakTime() {
-  breakSeconds = 5;
-  $("#time-left").html("Next question in... " + breakSeconds);
-  breakLeft = setInterval(breakDecrement, 1000);
-  // if (breakLeft === 0) {
-  //   clearInterval(breakLeft);
-  //   // currentQuestion++;
-  //   breakOver()
+  if ((correctGuesses + incorrectGuesses) < triviaQuestions.length) {
+    $("#time-left").empty();
+    breakSeconds = 10;
+    $("#time-left").html("Next question in... " + breakSeconds);
+    breakLeft = setInterval(breakDecrement, 1000);
   }
-
-
-function breakDecrement() {
-  breakSeconds--;
-  $("#time-left").show();
-  $("#time-left").html("Next question in..." + breakSeconds);
-  if (breakSeconds === 0) {
-    clearInterval(breakLeft);
+  else if ((correctGuesses + incorrectGuesses) === triviaQuestions.length) {
+    $("#time-left").hide();
     breakOver();
   }
 }
 
+function breakDecrement() {
+    breakSeconds--;
+    $("#time-left").show();
+    $("#time-left").html("Next question in..." + breakSeconds);
+    if (breakSeconds === 0) {
+      clearInterval(breakLeft);
+      breakOver();
+    }
+}
 
 function breakOver() {
     currentQuestion++;
     questionNumber++;
-    nextQuestion();
-};
+    clearInterval(breakLeft);
+    if (currentQuestion < triviaQuestions.length) {
+      nextQuestion();
+    }
+}
 
 function gameResult(){
   console.log("END OF GAME");
-}
+  $(".question-number").empty();
+  $(".current-question").empty();
+  $("#message").empty();
+  $("#correct-answer").empty();
+  $("#results-button").hide();
 
-    })
+  var endMessage = $("<div>");
+  endMessage.html("You got" + "<span id='correct-answer'> " + correctGuesses + "</span>" + " correct out of 8!");
+  $("#end-message").append(endMessage);
+  $("#playagain-button").show();
 
-
-
-
-
-// * You'll create a trivia game that shows only one question until the player answers it or their time runs out.
-//
-// * If the player selects the correct answer, show a screen congratulating them for choosing the right option. After a few seconds, display the next question -- do this without user input.
-//
-// * The scenario is similar for wrong answers and time-outs.
-//
-//   * If the player runs out of time, tell the player that time's up and display the correct answer. Wait a few seconds, then show the next question.
-//   * If the player chooses the wrong answer, tell the player they selected the wrong option and then display the correct answer. Wait a few seconds, then show the next question.
-//
-// * On the final screen, show the number of correct answers, incorrect answers, and an option to restart the game (without reloading the page).
+  }
+})
