@@ -34,7 +34,7 @@ var triviaQuestions = [{
   correctAnswer: 3
 },
 {
-  question: "Finish the Lyric: 'Camp Anawanna, we hold you in our hearts... and when we think about you...",
+  question: "Finish the Lyric: 'Camp Anawanna, we hold you in our hearts... and when we think about you...'",
   answerChoices: [
       "Our fun is off the charts",
       "It makes me wanna fart",
