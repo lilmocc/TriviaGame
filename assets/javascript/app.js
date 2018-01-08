@@ -137,6 +137,7 @@ function startGame() {
   breakSeconds = 0;
 	clearInterval(timeLeft);
   clearInterval(breakLeft);
+  $("#toons-img").hide();
   nextQuestion();
 }
 
@@ -284,6 +285,7 @@ function gameResult(){
   $("#message").empty();
   $("#correct-answer").empty();
   $("#results-button").hide();
+  $("#toons-img").show();
 
   var endMessage = $("<div>");
   endMessage.html("You got" + "<span id='correct-answer'> " + correctGuesses + "</span>" + " correct out of 8!");
