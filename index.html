@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>90s Cartoon Characters Trivia</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Rubik|Skranji:700" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+</head>
+
+<body>
+  <header>
+    <img src="assets/images/nickelodeon.png" id="nickelodeon-img">
+    <h1 id="title-text">90s Trivia</h1>
+
+  </header>
+
+  <div id="game-wrapper">
+  <button id="start-button">START!</button>
+
+  <!-- starting instructions -->
+  <div id="instructions">
+    <p>You'll be given 20 seconds to guess the answer for each question. There are 8 total questions.</p>
+    <p></p>
+    <p>Click START to start the game!</p>
+  </div>
+
+  <!-- question page -->
+  <div id="time-left"></div>
+  <div class="question-number"></div>
+  <div class="current-question"></div>
+  <div id="current-answerchoices"></div>
+
+  <!-- answer page -->
+  <div id="message"></div>
+  <div id="correct-answer"></div>
+  <button id="nextq-button">Go to next question</button>
+
+  <!-- summary page -->
+  <div id="end-message"></div>
+  <div id="correct-guesses"></div>
+  <div id="incorrect-guesses"></div>
+  <button id="playagain-button">Play again!</button>
+  </div>
+
+  <script src="assets/javascript/jquery-3.2.1.js"></script>
+  <script src="assets/javascript/app.js"></script>
+</body>
+
+</html>
